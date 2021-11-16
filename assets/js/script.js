@@ -38,7 +38,8 @@ var timerEl = document.querySelector("#time");
 var questionTextEl = document.getElementById("question-text");
 var choicesEl = document.querySelector("#choices");
 var feedbackEl = document.getElementById("feedback");
-var endScreenEl = document.getElementById("end-screen");
+var finishScreenEl = document.querySelector("#finish-screen");
+var finalScoreEl = document.querySelector("#final-score");
 var initialsInputEl = document.getElementById("initials");
 var initialsSubmitBtn = document.getElementById("submit");
 
@@ -56,37 +57,37 @@ function startQuiz() {
 };
 
 function askQuestions() {
-  var currentQuestion = questions[quizQuestionsIndex];
-  console.log(currentQuestion);
-  var questionText = currentQuestion.text;
-  questionTextEl.textContent = questionText;
-  console.log(questionText);
+    var currentQuestion = questions[quizQuestionsIndex];
+    //console.log(currentQuestion);
+    var questionText = currentQuestion.text;
+    questionTextEl.textContent = questionText;
+    //console.log(questionText);
 
 
 
-  choicesEl.innerHTML = "";
-  var choicesArr = currentQuestion.choices
-  // or choicesEl.textContent = "";
-  for (var i = 0; i < choicesArr.length; i++) {
-    var liEl = document.createElement('li');
-    console.log(choicesArr[i]);
-    liEl.setAttribute('value', choicesArr[i]);
-    liEl.textContent = (i + 1) + ". " + choicesArr[i]
-    choicesEl.appendChild(liEl);
-  }
+    choicesEl.innerHTML = "";
+    var choicesArr = currentQuestion.choices
+    // or choicesEl.textContent = "";
+    for (var i = 0; i < choicesArr.length; i++) {
+        var choiceBtnEl = document.createElement('button');
+        //console.log(choicesArr[i]);
+        choiceBtnEl.setAttribute('value', choicesArr[i]);
+        choiceBtnEl.textContent = (i + 1) + ". " + choicesArr[i]
+        choicesEl.appendChild(choiceBtnEl);
+    }
 }
 
 function runTick() {
     // decrement time by 1 second 
     timeCount--;
-     // display time count 
+    // display time count 
     timerEl.textContent = timeCount
     // check time count if it reaches 0
     if (!timeCount) {
         console.log("You're time has run out! HAHAHAHA!");
         clearInterval(timerId);
         // quiz ends
-       
+
     }
     // if it is at 0, it needs to execute the function endQuiz()
 }
@@ -102,9 +103,9 @@ function handleChoices(event) {
             timeCount = 0
         }
         timerEl.textContent = timeCount;
-        feedbackEl.textContent = "Unfortunately, you are wrong!"; 
+        feedbackEl.textContent = "Unfortunately, you are wrong!";
     } feedbackEl.setAttribute("class", "feedback");
-    setTimeout(function() {
+    setTimeout(function () {
         feedbackEl.setAttribute('class', 'hide');
     }, 1000);
 
@@ -117,18 +118,66 @@ function handleChoices(event) {
 }
 
 function quizEnd() {
+    //console.log('quizEnd');
+    // clear time interval
     clearInterval(timerId);
-    var finishScreenEl = document.querySelector("#finish-screen");
+    // remove the hide settings set in css for the finish screen
     finishScreenEl.removeAttribute("class");
-    var finalScoreEl = document.querySelector("#final-score");
-    // decided to make it a bit harder for the user!
-    finalScoreEl.textContent = timeCount * .5;
+    finalScoreEl.textContent = timeCount;
+    // make sure to hide the questions element. You have to set the attribute to hide which in the css says it will display no content
     questionEl.setAttribute("class", "hide");
-
+    return;
 
 }
 
+function handleInitialsKeyup(event) {
+    console.log('handleInitialsKeyup');
+    console.log('event.target', event.target);
+    console.log('event.key', event.key)
+    if (event.key === 'Enter') {
+        saveScores();
+    }
+    return;
+}
 
+function handleInitialsSubmit(event) {
+    console.log('handleInitialsSubmit');
+
+    saveScores();
+}
+
+function saveScores() {
+    console.log('saveScores');
+    //save the scores using local storage
+    var initialsValue = initialsInputEl.value.trim();
+    // get local storage items
+    var scores = [];
+    if (initialsValue) {
+        scores = JSON.parse(localStorage.getItem('scores'));
+        //console.log(scores);
+        if (!scores) {
+            scores = [];
+        };
+
+        var newScores = {
+            score: timeCount,
+            initials: initialsValue
+        }
+        console.log(scores);
+        scores.push(newScores);
+        localStorage.setItem('scores', JSON.stringify(scores));
+    };
+
+    location.href = "./highscores.html";
+
+    return;
+
+}
+
+//event listeners are defined here
 startBtn.addEventListener("click", startQuiz);
-
 choicesEl.onclick = handleChoices;
+//initialsInputEl.onkeyup = handleInitialsKeyup;
+// same as code above
+initialsInputEl.addEventListener('keyup', handleInitialsKeyup);
+initialsSubmitBtn.addEventListener('click', handleInitialsSubmit);
