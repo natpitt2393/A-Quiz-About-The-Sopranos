@@ -16,4 +16,8 @@ URLs:[A Quiz About The Sopranos](https://natpitt2393.github.io/A-Quiz-About-The-
 Screenshot of website: 	
 
 
-![A Quiz About The Sopranos](./assets/images/Quiz-Screenshot.png)
+
+
+![A Quiz About The Sopranos](./assets/images/Screenshot-Index.png)
+
+![A Quiz About The Sopranos](./assets/images/Screenshot-Highscores.png)
